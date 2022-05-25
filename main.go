@@ -1,14 +1,12 @@
 package main
 
 import (
-	//"fmt"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -153,19 +151,20 @@ func GetW(u string, day int) (string, error) {
 
 func main() {
 	// args := os.Args
-	f := flag.String("day", "0", "get day 0, 1, 2")
-	flag.Parse()
-	day, _ := strconv.Atoi(*f)
-
 	s := string([]byte{230, 157, 177, 228, 186, 172})
+
+	location := flag.String("l", s, "location")
+	day_num := flag.Int("d", 0, "get day 0, 1, 2")
+	flag.Parse()
+
 	u := string([]byte{104, 116, 116, 112, 115, 58, 47, 47, 119, 101, 97, 116, 104, 101, 114, 46, 116, 115, 117, 107, 117, 109, 105, 106, 105, 109, 97, 46, 110, 101, 116, 47, 97, 112, 105, 47, 102, 111, 114, 101, 99, 97, 115, 116, 47, 99, 105, 116, 121, 47})
-	id, err := GetID(s)
+	id, err := GetID(*location)
 	if err != nil {
 		return
 	}
 
 	u = u + id
-	re, _ := GetW(u, day)
+	re, _ := GetW(u, *day_num)
 
 	fmt.Print(re)
 
