@@ -3,9 +3,12 @@ package main
 import (
 	//"fmt"
 	"encoding/json"
+	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -107,7 +110,7 @@ func GetID(name string) (string, error) {
 
 }
 
-func GetW(u string) (string, error) {
+func GetW(u string, day int) (string, error) {
 	res, err := http.Get(u)
 	if err != nil {
 		fmt.Println("Get Error")
@@ -128,16 +131,33 @@ func GetW(u string) (string, error) {
 
 	}
 
-	fmt.Println(w_j.Forecasts[0].Telop)
-	fmt.Println(w_j.Forecasts[0].Temperature.Max)
-	fmt.Println(w_j.Forecasts[0].Temperature.Min)
+	if len(w_j.Forecasts) < day+1 {
+		return "day error", errors.New("day error")
 
-	return "", err
+	}
+
+	date := w_j.Forecasts[day].DateLabel
+	location := w_j.Location.City
+	telop := w_j.Forecasts[day].Telop
+	min_celsius := w_j.Forecasts[day].Temperature.Min.Celsius
+	max_celsius := w_j.Forecasts[day].Temperature.Max.Celsius
+
+	if min_celsius == nil {
+		min_celsius = "--"
+	}
+
+	str := fmt.Sprintf("%s %s %s Min%s Max%s\n", date, location, telop, min_celsius, max_celsius)
+
+	return str, err
 }
 
 func main() {
+	// args := os.Args
+	f := flag.String("day", "0", "get day 0, 1, 2")
+	flag.Parse()
+	day, _ := strconv.Atoi(*f)
+
 	s := string([]byte{230, 157, 177, 228, 186, 172})
-	// id := GetID(s)
 	u := string([]byte{104, 116, 116, 112, 115, 58, 47, 47, 119, 101, 97, 116, 104, 101, 114, 46, 116, 115, 117, 107, 117, 109, 105, 106, 105, 109, 97, 46, 110, 101, 116, 47, 97, 112, 105, 47, 102, 111, 114, 101, 99, 97, 115, 116, 47, 99, 105, 116, 121, 47})
 	id, err := GetID(s)
 	if err != nil {
@@ -145,7 +165,8 @@ func main() {
 	}
 
 	u = u + id
+	re, _ := GetW(u, day)
 
-	GetW(u)
+	fmt.Print(re)
 
 }
