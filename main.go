@@ -137,6 +137,8 @@ func GetW(u string, day int) (string, error) {
 	date := w_j.Forecasts[day].DateLabel
 	location := w_j.Location.City
 	telop := w_j.Forecasts[day].Telop
+	fmt.Println([]byte("℃"))
+	cels := string([]byte{226, 132, 131})
 	min_celsius := w_j.Forecasts[day].Temperature.Min.Celsius
 	max_celsius := w_j.Forecasts[day].Temperature.Max.Celsius
 
@@ -144,16 +146,18 @@ func GetW(u string, day int) (string, error) {
 		min_celsius = "--"
 	}
 
-	str := fmt.Sprintf("%s %s %s Min%s Max%s\n", date, location, telop, min_celsius, max_celsius)
+	min_celsius = min_celsius.(string) + cels
+	max_celsius = max_celsius + cels
+
+	str := fmt.Sprintf("%s %s %s Max%s Min%s", date, location, telop, max_celsius, min_celsius)
 
 	return str, err
 }
 
 func main() {
-	// args := os.Args
-	s := string([]byte{230, 157, 177, 228, 186, 172})
+	lo := string([]byte{230, 157, 177, 228, 186, 172})
 
-	location := flag.String("l", s, "location")
+	location := flag.String("l", lo, "location")
 	day_num := flag.Int("d", 0, "get day 0, 1, 2")
 	flag.Parse()
 
