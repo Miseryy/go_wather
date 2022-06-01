@@ -171,5 +171,4 @@ func main() {
 	re, _ := GetW(u, *day_num)
 
 	fmt.Print(re)
-
 }
